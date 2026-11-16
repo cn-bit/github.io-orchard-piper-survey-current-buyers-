@@ -167,7 +167,7 @@ var CONFIG = {
   var count = document.getElementById('count');
 
   var STEPS = ['intro', 'project', 'signed', 'discovery', 'purchase', 'factors', 'considered', 'ratings',
-               'progress', 'source', 'updates', 'contact', 'feeling', 'moving', 'recommend', 'about'];
+               'progress', 'source', 'updates', 'timing', 'contact', 'feeling', 'moving', 'recommend', 'about'];
 
   var STAGES = [
     ['rate_enquiry', 'Your first enquiry'],
@@ -262,7 +262,7 @@ var CONFIG = {
     intro: function () {
       return { cls: 'intro', title: 'We would value your view of the Orchard Piper experience so far.', body: [
         el('p', { text: 'Orchard Piper has asked Apertura CX, an independent customer experience studio, to listen to the people who have recently purchased an Orchard Piper residence. Your answers will help shape how you and future purchasers are looked after through to completion.' }),
-        el('p', { text: 'There are fifteen short questions and they take about six minutes. Most are a single tap.' }),
+        el('p', { text: 'There are sixteen short questions and they take about six minutes. Most are a single tap.' }),
         el('p', { 'class': 'fine', text: 'We do not ask for your name or contact details. Your answers are read by ' + CONFIG.INTERVIEWER + ' of Apertura CX, and Orchard Piper receives the findings with nothing attributed to any individual.' })
       ], go: 'Begin', noBack: true };
     },
@@ -335,6 +335,11 @@ var CONFIG = {
         help: 'Choose up to three.', done: function () { return (A.hear_about || []).length > 0 && otherOk('hear_about'); },
         need: 'Choose at least one to continue', body: [
         choice('hear_about', ['Construction milestones and timing', 'Photos or video of the build', 'Any change to the completion date', 'The finishes and details of my residence', 'What to expect at settlement and handover', 'Opportunities to visit the site', 'Other'], { max: 3 })
+      ] };
+    },
+    timing: function () {
+      return { title: 'Are you clear on the timing of the project and completion dates?', done: function () { return !!A.timing_clarity; }, body: [
+        choice('timing_clarity', ['Yes, I am clear on both', 'I have a rough idea', 'No, I am not clear'])
       ] };
     },
     contact: function () {

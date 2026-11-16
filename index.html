@@ -167,7 +167,7 @@ var CONFIG = {
   var count = document.getElementById('count');
 
   var STEPS = ['intro', 'project', 'signed', 'discovery', 'purchase', 'factors', 'considered', 'ratings',
-               'progress', 'source', 'updates', 'timing', 'contact', 'feeling', 'moving', 'recommend', 'about'];
+               'progress', 'source', 'updates', 'timing', 'contact', 'feeling', 'moving', 'recommend', 'about', 'thinking'];
 
   var STAGES = [
     ['rate_enquiry', 'Your first enquiry'],
@@ -262,7 +262,7 @@ var CONFIG = {
     intro: function () {
       return { cls: 'intro', title: 'We would value your view of the Orchard Piper experience so far.', body: [
         el('p', { text: 'Orchard Piper has asked Apertura CX, an independent customer experience studio, to listen to the people who have recently purchased an Orchard Piper residence. Your answers will help shape how you and future purchasers are looked after through to completion.' }),
-        el('p', { text: 'There are sixteen short questions and they take about six minutes. Most are a single tap.' }),
+        el('p', { text: 'There are seventeen short pages and they take about eight minutes. Most are a single tap.' }),
         el('p', { 'class': 'fine', text: 'We do not ask for your name or contact details. Your answers are read by ' + CONFIG.INTERVIEWER + ' of Apertura CX, and Orchard Piper receives the findings with nothing attributed to any individual.' })
       ], go: 'Begin', noBack: true };
     },
@@ -362,8 +362,8 @@ var CONFIG = {
       ] };
     },
     about: function () {
-      return { title: 'Lastly, a little about you.', help: 'These three answers help Orchard Piper understand who is buying. Choose prefer not to say for any you would rather skip.',
-        done: function () { return !!A.household && !!A.lives_now && !!A.age_group; }, need: 'Answer all three parts to send', go: 'Send my answers', body: [
+      return { title: 'A little about you.', help: 'These three answers help Orchard Piper understand who is buying. Choose prefer not to say for any you would rather skip.',
+        done: function () { return !!A.household && !!A.lives_now && !!A.age_group; }, need: 'Answer all three parts to continue', body: [
         el('h2', { 'class': 'first', text: 'Who will live in the residence?' }),
         choice('household', ['Just me', 'Me and my partner', 'A family with children at home', 'Other family members', 'Tenants or guests', 'Prefer not to say']),
         el('h2', { text: 'Where do you live now?' }),
@@ -372,6 +372,20 @@ var CONFIG = {
         choice('age_group', ['Under 40', '40 to 49', '50 to 59', '60 to 69', '70 or over', 'Prefer not to say'])
       ] };
     }
+  };
+
+  SCREENS.thinking = function () {
+    function picked(key) { return (A[key] || []).length > 0 && otherOk(key); }
+    return { title: 'Lastly, the thinking behind your purchase.', help: 'Choose up to two for each of these three questions.',
+      done: function () { return picked('purchase_meaning') && picked('hesitation') && picked('confidence'); },
+      need: 'Answer all three parts to send', go: 'Send my answers', body: [
+      el('h2', { 'class': 'first', text: 'Beyond the residence itself, what does this purchase represent for you?' }),
+      choice('purchase_meaning', ['A simpler life with less to look after', 'Security and peace of mind', 'The freedom to travel and lock up and leave', 'A home that reflects what I have worked for', 'Being close to the people and places that matter to me', 'The right home for the next stage of life', 'A sound place for my capital', 'Other'], { max: 2 }),
+      el('h2', { text: 'Before you committed, what gave you the most pause?' }),
+      choice('hesitation', ['Buying before I could see the finished residence', 'The length of the wait', 'Leaving my current home', 'The financial commitment', 'Whether it would be delivered as promised', 'Selling my current home at the right time', 'Reaching agreement with my partner or family', 'Nothing gave me pause', 'Other'], { max: 2, exclusive: 'Nothing gave me pause' }),
+      el('h2', { text: 'What gave you the confidence to go ahead?' }),
+      choice('confidence', ['Seeing Orchard Piper\u2019s completed buildings', 'The people I dealt with', 'The display suite', 'A recommendation from someone I trust', 'The architect and design team', 'Knowing how few residences were available', 'It simply felt right', 'Other'], { max: 2 })
+    ] };
   };
 
   /* ---------- rendering ---------- */
@@ -420,7 +434,7 @@ var CONFIG = {
   function payload() {
     var out = { survey: 'current_buyers' }, k;
     for (k in A) out[k] = Array.isArray(A[k]) ? A[k].join('; ') : String(A[k]).trim();
-    ['discovery', 'purchase_type', 'factors', 'progress_source', 'hear_about'].forEach(function (key) {
+    ['discovery', 'purchase_type', 'factors', 'progress_source', 'hear_about', 'purchase_meaning', 'hesitation', 'confidence'].forEach(function (key) {
       if ((out[key] || '').indexOf('Other') === -1) delete out[key + '_other'];
     });
     if (!consideredOthers() || !out.considered_which) delete out.considered_which;
